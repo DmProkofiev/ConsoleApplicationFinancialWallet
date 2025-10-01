@@ -63,6 +63,7 @@ namespace ConsoleApplicationFinancialWallet
             
             while (true)
             {
+                
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine($"Ваш кошелек: {wallet.Name}");
                 Console.ForegroundColor = ConsoleColor.Yellow;
@@ -79,11 +80,13 @@ namespace ConsoleApplicationFinancialWallet
                 Console.WriteLine("5. Показать доходы за текущий месяц");
                 Console.WriteLine("6. Показать расходы за текущий месяц");
                 Console.WriteLine("7. Совершить платежное поручение");
-                Console.WriteLine("8. Выбрать кошелек");
+                Console.WriteLine("8. Три самых больших траты за месяц");
+                Console.WriteLine("9. Выбрать кошелек");
                 Console.ResetColor();
+                
 
                 string choiceMenu = Console.ReadLine();
-
+                Console.Clear();
                 switch (choiceMenu)
                 {
                     case "1":
@@ -102,13 +105,16 @@ namespace ConsoleApplicationFinancialWallet
                        await TransactionService.IncomeWalletPerMonthAsync(choiceWallet);
                         break;
                     case "6":
-                        TransactionService.ExpenseWalletPerMonth(choiceWallet);
+                        TransactionService.ExpenseWalletPerMonthAsync(choiceWallet);
                         break;
                     case "7":
                         Console.WriteLine("Для совершения платежного поручения укажите сумму платежа, назначение");
                         await WalletService.PayWalletAsync(choiceWallet);
                         break;
                     case "8":
+                        await TransactionService.ThreeExpenseWalletPerMonthAsync(choiceWallet);
+                        break;
+                    case "9":
                         Console.WriteLine("Выберите другой кошелек");
                         return;
                     default:
