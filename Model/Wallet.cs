@@ -24,5 +24,6 @@ namespace ConsoleApplicationFinancialWallet.Model
             Currency = currency;
             StartBalance = startBalance;
         }
+        public Wallet() { }
     }
 }

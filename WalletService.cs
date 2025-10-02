@@ -38,36 +38,37 @@ namespace ConsoleApplicationFinancialWallet
             Console.WriteLine("Сумма");
             string inputAmount = Console.ReadLine();
 
-            if (decimal.TryParse(inputAmount, out decimal amount))
+            if (decimal.TryParse(inputAmount, out decimal amount) && amount > 0)
             {
+                decimal currentBalance = CurrentBalance(choiceWallet);
+
+                if (currentBalance < amount)
+                {
+                    Console.WriteLine("Недостаточно средств на кошельке.");
+                    return;
+                }
+
                 using (var context = new ApplicationContext())
                 {
-                    // Пример: определить следующий Id через цикл (не рекомендуется)
-                    int newId = 1;
-                    var allIds = context.Transactions.Select(t => t.Id).ToList();
-                    int maxId = 0;
-                    for (int i = 0; i < allIds.Count; i++)
+                    var wallet = context.Wallets.FirstOrDefault(w => w.Id == choiceWallet);
+
+                    var transaction = new Transaction
                     {
-                        if (allIds[i] > maxId) maxId = allIds[i];
-                    }
-                    newId = maxId + 1;
+                        WalletId = choiceWallet,
+                        Date = DateTime.Now,
+                        Amount = amount,
+                        Description = description,
+                        Type = Transaction.TransactionType.Expense
+                    };
 
-                    //var payment = new Transaction
-                    //{
-                    //    Id = newId, 
-                    //    WalletId = choiceWallet,
-                    //    Date = DateTime.Now,
-                    //    Amount = amount,
-                    //    Description = description,
-                    //    Type = Transaction.TransactionType.Expense
-                    //};
+                    context.Transactions.Add(transaction);
+                    context.SaveChanges();
 
-                    //context.Transactions.Add(payment);
-                    //context.SaveChanges();
+                    Console.WriteLine($"Платеж выполнен. Ваш баланс: {wallet.StartBalance}");
                 }
                 return;
             }
-            Console.WriteLine("Некорректная сумма.");
+            Console.WriteLine("Некорректная сумма");
         }
     }
 }

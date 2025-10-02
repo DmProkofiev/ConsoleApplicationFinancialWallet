@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 
 namespace ConsoleApplicationFinancialWallet
 {
@@ -10,6 +11,10 @@ namespace ConsoleApplicationFinancialWallet
     {
         static void Main(string[] args)
         {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Console.OutputEncoding = Encoding.GetEncoding(866);
+            Console.InputEncoding = Encoding.GetEncoding(866);
+
             ApplicationContext context = new ApplicationContext();
             WalletService walletService = new WalletService(context);
             TransactionService transactionService = new TransactionService(context);

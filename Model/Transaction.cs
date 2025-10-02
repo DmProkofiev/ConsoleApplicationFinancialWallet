@@ -32,5 +32,8 @@ namespace ConsoleApplicationFinancialWallet.Model
             Description = description;
             WalletId = walletId;
         }
+        public Transaction()
+        {
+        }
     }
 }
