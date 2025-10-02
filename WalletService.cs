@@ -16,22 +16,24 @@ namespace ConsoleApplicationFinancialWallet
         }
 
         private readonly ApplicationContext _context;
-        public static async Task<decimal> CurrentBalanceAsync(int choiceWallet)
+
+        public async Task<decimal> CurrentBalanceAsync(int walletId)
         {
-            using (var context = new ApplicationContext())
-            {
-                decimal startBalance = await context.Wallets.Where(w => w.Id == choiceWallet).Select(w => w.StartBalance).FirstOrDefaultAsync();
+            decimal startBalance = await _context.Wallets.Where(w => w.Id == walletId).Select(w => w.StartBalance).FirstOrDefaultAsync();
 
-                decimal income = await context.Transactions.Where(t => t.WalletId == choiceWallet && (int)t.Type == 1).SumAsync(t => t.Amount);
+            decimal Income = await _context.Transactions.Where(t => t.WalletId == walletId && t.Type == Transaction.TransactionType.Income).SumAsync(t => t.Amount);
 
-                decimal expense = await context.Transactions.Where(t => t.WalletId == choiceWallet && (int)t.Type == 2).SumAsync(t => t.Amount);
+            decimal Expense = await _context.Transactions.Where(t => t.WalletId == walletId && t.Type == Transaction.TransactionType.Expense).SumAsync(t => t.Amount);
 
-                decimal currentBalance = startBalance + income - expense;
-                Console.WriteLine($"Ваш текущий остаток по счету {currentBalance}");
-                return currentBalance;
-            }
+            decimal currentBalance = startBalance + Income - Expense;
+
+            Console.WriteLine($"Текущий баланс кошелька: {currentBalance}");
+            Console.WriteLine($"(Начальный: {startBalance} + Доходы: {Income} - Расходы: {Expense})");
+
+            return currentBalance;
         }
-        public static async Task PayWalletAsync(int choiceWallet) //Совершение платежа
+
+        public async Task PayWalletAsync(int choiceWallet)
         {
             Console.WriteLine("Назначение платежного поручения");
             string description = Console.ReadLine();
@@ -49,24 +51,20 @@ namespace ConsoleApplicationFinancialWallet
                     return;
                 }
 
-                using (var context = new ApplicationContext())
+                var transaction = new Transaction
                 {
-                    var wallet = await context.Wallets.FirstOrDefaultAsync(w => w.Id == choiceWallet);
+                    WalletId = choiceWallet,
+                    Date = DateTime.Today,
+                    Amount = amount,
+                    Description = description,
+                    Type = Transaction.TransactionType.Expense
+                };
 
-                    var transaction = new Transaction
-                    {
-                        WalletId = choiceWallet,
-                        Date = DateTime.Now,
-                        Amount = amount,
-                        Description = description,
-                        Type = Transaction.TransactionType.Expense
-                    };
+                _context.Transactions.Add(transaction);
+                await _context.SaveChangesAsync();
 
-                    context.Transactions.Add(transaction);
-                    await context.SaveChangesAsync();
-
-                    Console.WriteLine($"Платеж выполнен. Ваш баланс: {currentBalance - amount}");
-                }
+                decimal newBalance = currentBalance - amount;
+                Console.WriteLine($"Платеж выполнен. Ваш баланс: {newBalance}");
                 return;
             }
             Console.WriteLine("Некорректная сумма");

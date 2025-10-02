@@ -9,24 +9,23 @@ namespace ConsoleApplicationFinancialWallet
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Console.OutputEncoding = Encoding.GetEncoding(866);
             Console.InputEncoding = Encoding.GetEncoding(866);
-
-            ApplicationContext context = new ApplicationContext();
-            WalletService walletService = new WalletService(context);
-            TransactionService transactionService = new TransactionService(context);
-            
-            Console.WriteLine("Консольное Приложение Financial Wallet для учета личных финансов");
-            Console.WriteLine("Разработчик Прокофьев Дмитрий Леонидович");
-
-            while (true)
+            using (var context = new ApplicationContext())
             {
-                int choiceWallet = GetWallet(context);
-                UseWalletAsync(context, choiceWallet);
+                Console.WriteLine("Консольное Приложение Financial Wallet для учета личных финансов");
+                Console.WriteLine("Разработчик Прокофьев Дмитрий Леонидович");
+
+                while (true)
+                {
+                    int choiceWallet = GetWallet(context);
+                    await UseWalletAsync(context, choiceWallet);
+                }
             }
+               
         }
 
         public static int GetWallet(ApplicationContext context)
@@ -59,8 +58,11 @@ namespace ConsoleApplicationFinancialWallet
 
         public static async Task UseWalletAsync(ApplicationContext context, int choiceWallet)
         {
+            WalletService walletService = new WalletService(context);
+            TransactionService transactionService = new TransactionService(context);
             var wallet = context.Wallets.FirstOrDefault(w => w.Id == choiceWallet);
-            
+
+
             while (true)
             {
                 
@@ -90,29 +92,29 @@ namespace ConsoleApplicationFinancialWallet
                 switch (choiceMenu)
                 {
                     case "1":
-                        await WalletService.CurrentBalanceAsync(choiceWallet);
+                        await walletService.CurrentBalanceAsync(choiceWallet);
                         break;
                     case "2":
-                        await TransactionService.TransactionWalletAsync(choiceWallet);
+                        await transactionService.TransactionWalletAsync(choiceWallet);
                         break;
                     case "3":
-                        await TransactionService.IncomeWalletAsync(choiceWallet);
+                        await transactionService.IncomeWalletAsync(choiceWallet);
                         break;
                     case "4":
-                        await TransactionService.ExpenseWalletAsync(choiceWallet);
+                        await transactionService.ExpenseWalletAsync(choiceWallet);
                         break;
                     case "5":
-                       await TransactionService.IncomeWalletPerMonthAsync(choiceWallet);
+                       await transactionService.IncomeWalletPerMonthAsync(choiceWallet);
                         break;
                     case "6":
-                        TransactionService.ExpenseWalletPerMonthAsync(choiceWallet);
+                        await transactionService.ExpenseWalletPerMonthAsync(choiceWallet);
                         break;
                     case "7":
                         Console.WriteLine("Для совершения платежного поручения укажите сумму платежа, назначение");
-                        await WalletService.PayWalletAsync(choiceWallet);
+                        await walletService.PayWalletAsync(choiceWallet);
                         break;
                     case "8":
-                        await TransactionService.ThreeExpenseWalletPerMonthAsync(choiceWallet);
+                        await transactionService.ThreeExpenseWalletPerMonthAsync(choiceWallet);
                         break;
                     case "9":
                         Console.WriteLine("Выберите другой кошелек");
