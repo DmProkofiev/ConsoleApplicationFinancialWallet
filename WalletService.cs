@@ -65,7 +65,7 @@ namespace ConsoleApplicationFinancialWallet
                     context.Transactions.Add(transaction);
                     await context.SaveChangesAsync();
 
-                    Console.WriteLine($"Платеж выполнен. Ваш баланс: {wallet.StartBalance}");
+                    Console.WriteLine($"Платеж выполнен. Ваш баланс: {wallet.StartBalance - amount}");
                 }
                 return;
             }
