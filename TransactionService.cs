@@ -26,6 +26,7 @@ namespace ConsoleApplicationFinancialWallet
                 var transaction = transactions[i];
                 Console.WriteLine($"{transaction.Date:dd.MM.yyyy} | {transaction.Amount} | {transaction.Description}");
             }
+            Console.WriteLine($"DEBUG: transactions.Count = {transactions.Count}");
 
         }
         public async Task IncomeWalletAsync(int choiceWallet) //Доходы
@@ -68,6 +69,7 @@ namespace ConsoleApplicationFinancialWallet
             }
 
             Console.WriteLine($"Общая сумма расходов: {AmountExpense}");
+            //Console.WriteLine($" transactions.Count = {Expense.Count}"); для отлдаки
 
         }
         public async Task IncomeWalletPerMonthAsync(int choiceWallet) //Доходы за текущий месяц
