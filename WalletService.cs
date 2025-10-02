@@ -16,21 +16,22 @@ namespace ConsoleApplicationFinancialWallet
         }
 
         private readonly ApplicationContext _context;
-        public static decimal CurrentBalance(int choiceWallet) //текущтий баланс
+        public static async Task<decimal> CurrentBalanceAsync(int choiceWallet)
         {
             using (var context = new ApplicationContext())
             {
-                decimal StartBalance = context.Wallets.Where(w => w.Id == choiceWallet).Select(w => w.StartBalance).FirstOrDefault();
+                decimal startBalance = await context.Wallets.Where(w => w.Id == choiceWallet).Select(w => w.StartBalance).FirstOrDefaultAsync();
 
-                decimal Income = context.Transactions.Where(t => t.WalletId == choiceWallet && (int)t.Type == 1).Sum(t => t.Amount);
-                decimal Expense = context.Transactions.Where(t => t.WalletId == choiceWallet && (int)t.Type == 2).Sum(t => t.Amount);
+                decimal income = await context.Transactions.Where(t => t.WalletId == choiceWallet && (int)t.Type == 1).SumAsync(t => t.Amount);
 
-                decimal currentBalance = StartBalance + Income - Expense;
+                decimal expense = await context.Transactions.Where(t => t.WalletId == choiceWallet && (int)t.Type == 2).SumAsync(t => t.Amount);
+
+                decimal currentBalance = startBalance + income - expense;
                 Console.WriteLine($"Ваш текущий остаток по счету {currentBalance}");
                 return currentBalance;
             }
         }
-        public static void PayWallet(int choiceWallet) //Совершение платежа
+        public static async Task PayWalletAsync(int choiceWallet) //Совершение платежа
         {
             Console.WriteLine("Назначение платежного поручения");
             string description = Console.ReadLine();
@@ -40,7 +41,7 @@ namespace ConsoleApplicationFinancialWallet
 
             if (decimal.TryParse(inputAmount, out decimal amount) && amount > 0)
             {
-                decimal currentBalance = CurrentBalance(choiceWallet);
+                decimal currentBalance = await CurrentBalanceAsync(choiceWallet);
 
                 if (currentBalance < amount)
                 {
@@ -50,7 +51,7 @@ namespace ConsoleApplicationFinancialWallet
 
                 using (var context = new ApplicationContext())
                 {
-                    var wallet = context.Wallets.FirstOrDefault(w => w.Id == choiceWallet);
+                    var wallet = await context.Wallets.FirstOrDefaultAsync(w => w.Id == choiceWallet);
 
                     var transaction = new Transaction
                     {
@@ -62,7 +63,7 @@ namespace ConsoleApplicationFinancialWallet
                     };
 
                     context.Transactions.Add(transaction);
-                    context.SaveChanges();
+                    await context.SaveChangesAsync();
 
                     Console.WriteLine($"Платеж выполнен. Ваш баланс: {wallet.StartBalance}");
                 }

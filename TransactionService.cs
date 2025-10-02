@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,24 +15,24 @@ namespace ConsoleApplicationFinancialWallet
         }
         private readonly ApplicationContext _context;
 
-        public static void TransactionWallet(int choiceWallet) //Транзакции
+        public static async Task TransactionWalletAsync(int choiceWallet) //Транзакции
         {
             using (var context = new ApplicationContext())
             {
-                var Transactions = context.Transactions.Where(t => t.WalletId == choiceWallet).OrderByDescending(t => t.Date).ToList();
+                var transactions = await context.Transactions.Where(t => t.WalletId == choiceWallet).OrderByDescending(t => t.Date).ToListAsync();
 
-                for (int i = 0; i < Transactions.Count; i++)
+                for (int i = 0; i < transactions.Count; i++)
                 {
-                    var transaction = Transactions[i];
+                    var transaction = transactions[i];
                     Console.WriteLine($"{transaction.Date:dd.MM.yyyy} | {transaction.Amount} | {transaction.Description}");
                 }
             }
         }
-        public static void IncomeWallet(int choiceWallet) //Доходы
+        public static async Task IncomeWalletAsync(int choiceWallet) //Доходы
         {
             using (var context = new ApplicationContext())
             {
-                var Transactions = context.Transactions.Where(t => t.WalletId == choiceWallet).OrderByDescending(t => t.Date).ToList();
+                var Transactions = await context.Transactions.Where(t => t.WalletId == choiceWallet).OrderByDescending(t => t.Date).ToListAsync();
 
                 //var Income = Transactions.Where(t => t.Type == Transaction.TransactionType.Income).ToList(); 
                 var Income = Transactions.Where(t => (int)t.Type == 1).ToList();
@@ -51,11 +52,11 @@ namespace ConsoleApplicationFinancialWallet
                 Console.WriteLine($"Общая сумма доходов: {AmountIncome}");
             }
         }
-        public static void ExpenseWallet(int choiceWallet) //Расходы
+        public static async Task ExpenseWalletAsync(int choiceWallet) //Расходы
         {
             using (var context = new ApplicationContext())
             {
-                var Transactions = context.Transactions.Where(t => t.WalletId == choiceWallet).OrderByDescending(t => t.Date).ToList();
+                var Transactions = await context.Transactions.Where(t => t.WalletId == choiceWallet).OrderByDescending(t => t.Date).ToListAsync();
 
                 var Expense = Transactions.Where(t => (int)t.Type == 2).ToList();
 
@@ -74,7 +75,7 @@ namespace ConsoleApplicationFinancialWallet
                 Console.WriteLine($"Общая сумма расходов: {AmountExpense}");
             }
         }
-        public static void IncomeWalletPerMonth(int choiceWallet) //Доходы за текущий месяц
+        public static async Task IncomeWalletPerMonthAsync(int choiceWallet) //Доходы за текущий месяц
         {
             using (var context = new ApplicationContext())
             {
@@ -82,7 +83,7 @@ namespace ConsoleApplicationFinancialWallet
                 int thisYear = now.Year;
                 int thisMonth = now.Month;
 
-                var Income = context.Transactions.Where(t => t.WalletId == choiceWallet && (int)t.Type == 1 && t.Date.Year == thisYear && t.Date.Month == thisMonth).OrderByDescending(t => t.Date).ToList();
+                var Income = await context.Transactions.Where(t => t.WalletId == choiceWallet && (int)t.Type == 1 && t.Date.Year == thisYear && t.Date.Month == thisMonth).OrderByDescending(t => t.Date).ToListAsync();
 
                 Console.WriteLine($"Доходы за {thisMonth:00}.{thisYear}:");
 
@@ -102,7 +103,7 @@ namespace ConsoleApplicationFinancialWallet
                 Console.WriteLine($"Общая сумма доходов за месяц: {AmountIncome}");
             }
         }
-        public static void ExpenseWalletPerMonth(int choiceWallet) //Расходы за текущий месяц
+        public static async Task ExpenseWalletPerMonth(int choiceWallet) //Расходы за текущий месяц
         {
             using (var context = new ApplicationContext())
             {
@@ -110,7 +111,7 @@ namespace ConsoleApplicationFinancialWallet
                 int thisYear = now.Year;
                 int thisMonth = now.Month;
 
-                var Expense = context.Transactions.Where(t => t.WalletId == choiceWallet && (int)t.Type == 2 && t.Date.Year == thisYear && t.Date.Month == thisMonth).OrderByDescending(t => t.Date).ToList();
+                var Expense = await context.Transactions.Where(t => t.WalletId == choiceWallet && (int)t.Type == 2 && t.Date.Year == thisYear && t.Date.Month == thisMonth).OrderByDescending(t => t.Date).ToListAsync();
 
                 Console.WriteLine($"Доходы за {thisMonth:00}.{thisYear}:");
 

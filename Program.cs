@@ -25,7 +25,7 @@ namespace ConsoleApplicationFinancialWallet
             while (true)
             {
                 int choiceWallet = GetWallet(context);
-                UseWallet(context, choiceWallet);
+                UseWalletAsync(context, choiceWallet);
             }
         }
 
@@ -57,7 +57,7 @@ namespace ConsoleApplicationFinancialWallet
             }
         }
 
-        public static void UseWallet(ApplicationContext context, int choiceWallet)
+        public static async Task UseWalletAsync(ApplicationContext context, int choiceWallet)
         {
             var wallet = context.Wallets.FirstOrDefault(w => w.Id == choiceWallet);
             
@@ -87,26 +87,26 @@ namespace ConsoleApplicationFinancialWallet
                 switch (choiceMenu)
                 {
                     case "1":
-                        WalletService.CurrentBalance(choiceWallet);
+                        await WalletService.CurrentBalanceAsync(choiceWallet);
                         break;
                     case "2":
-                        TransactionService.TransactionWallet(choiceWallet);
+                        await TransactionService.TransactionWalletAsync(choiceWallet);
                         break;
                     case "3":
-                        TransactionService.IncomeWallet(choiceWallet);
+                        await TransactionService.IncomeWalletAsync(choiceWallet);
                         break;
                     case "4":
-                        TransactionService.ExpenseWallet(choiceWallet);
+                        await TransactionService.ExpenseWalletAsync(choiceWallet);
                         break;
                     case "5":
-                        TransactionService.IncomeWalletPerMonth(choiceWallet);
+                       await TransactionService.IncomeWalletPerMonthAsync(choiceWallet);
                         break;
                     case "6":
                         TransactionService.ExpenseWalletPerMonth(choiceWallet);
                         break;
                     case "7":
                         Console.WriteLine("Для совершения платежного поручения укажите сумму платежа, назначение");
-                        WalletService.PayWallet(choiceWallet);
+                        await WalletService.PayWalletAsync(choiceWallet);
                         break;
                     case "8":
                         Console.WriteLine("Выберите другой кошелек");
