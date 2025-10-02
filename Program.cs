@@ -1,8 +1,4 @@
-﻿using ConsoleApplicationFinancialWallet.Model;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
-using System.Security.Cryptography.X509Certificates;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Text;
 
 namespace ConsoleApplicationFinancialWallet
@@ -14,6 +10,7 @@ namespace ConsoleApplicationFinancialWallet
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Console.OutputEncoding = Encoding.GetEncoding(866);
             Console.InputEncoding = Encoding.GetEncoding(866);
+
             using (var context = new ApplicationContext())
             {
                 Console.WriteLine("Консольное Приложение Financial Wallet для учета личных финансов");
@@ -25,30 +22,30 @@ namespace ConsoleApplicationFinancialWallet
                     await UseWalletAsync(context, choiceWallet);
                 }
             }
-               
+
         }
 
         public static int GetWallet(ApplicationContext context)
         {
             //context.Database.CanConnect();
 
-            var wallets = context.Wallets.ToList();
+            var wallets = context.Wallets.AsNoTracking().ToListAsync();
 
-            for (int i = 0; i < wallets.Count; i++)
+            for (int i = 0; i < wallets.Result.Count; i++)
             {
-                var wallet = wallets[i];
-                Console.WriteLine($"{wallets[i].Id}. {wallet.Name}");
+                var wallet = wallets.Result[i];
+                Console.WriteLine($"{wallets.Result[i].Id}. {wallet.Name}");
             }
-  
+
             while (true)
             {
-                Console.WriteLine($"введите значение в диапазоне: 1..{wallets.Count}");
+                Console.WriteLine($"введите значение в диапазоне: 1..{wallets.Result.Count}");
                 var inputUser = Console.ReadLine();
                 if (int.TryParse(inputUser, out int index))
                 {
-                    if (index >= 1 && index <= wallets.Count)
+                    if (index >= 1 && index <= wallets.Result.Count)
                     {
-                        return wallets[index - 1].Id; 
+                        return wallets.Result[index - 1].Id;
                     }
                 }
 
@@ -65,7 +62,7 @@ namespace ConsoleApplicationFinancialWallet
 
             while (true)
             {
-                
+
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine($"Ваш кошелек: {wallet.Name}");
                 Console.ForegroundColor = ConsoleColor.Yellow;
@@ -85,7 +82,7 @@ namespace ConsoleApplicationFinancialWallet
                 Console.WriteLine("8. Три самых больших траты за месяц");
                 Console.WriteLine("9. Выбрать кошелек");
                 Console.ResetColor();
-                
+
 
                 string choiceMenu = Console.ReadLine();
                 Console.Clear();
@@ -104,7 +101,7 @@ namespace ConsoleApplicationFinancialWallet
                         await transactionService.ExpenseWalletAsync(choiceWallet);
                         break;
                     case "5":
-                       await transactionService.IncomeWalletPerMonthAsync(choiceWallet);
+                        await transactionService.IncomeWalletPerMonthAsync(choiceWallet);
                         break;
                     case "6":
                         await transactionService.ExpenseWalletPerMonthAsync(choiceWallet);

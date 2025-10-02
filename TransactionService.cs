@@ -1,10 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ConsoleApplicationFinancialWallet.Model;
+﻿using ConsoleApplicationFinancialWallet.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace ConsoleApplicationFinancialWallet
 {
@@ -31,20 +26,20 @@ namespace ConsoleApplicationFinancialWallet
         }
         public async Task IncomeWalletAsync(int choiceWallet) //Доходы
         {
-            var Transactions = await _context.Transactions.Where(t => t.WalletId == choiceWallet).OrderByDescending(t => t.Date).ToListAsync();
+            var transactions = await _context.Transactions.Where(t => t.WalletId == choiceWallet).OrderByDescending(t => t.Date).ToListAsync();
 
-            var Income = Transactions.Where(t => t.Type == Transaction.TransactionType.Income).ToList(); 
+            var income = transactions.Where(t => t.Type == Transaction.TransactionType.Income).ToList();
 
-            for (int i = 0; i < Income.Count; i++)
+            for (int i = 0; i < income.Count; i++)
             {
-                var transaction = Income[i];
+                var transaction = income[i];
                 Console.WriteLine($"{transaction.Date:dd.MM.yyyy} | {transaction.Amount} | {transaction.Description}");
             }
 
             decimal AmountIncome = 0;
-            for (int i = 0; i < Income.Count; i++)
+            for (int i = 0; i < income.Count; i++)
             {
-                AmountIncome += Income[i].Amount;
+                AmountIncome += income[i].Amount;
             }
 
             Console.WriteLine($"Общая сумма доходов: {AmountIncome}");
@@ -52,20 +47,20 @@ namespace ConsoleApplicationFinancialWallet
         }
         public async Task ExpenseWalletAsync(int choiceWallet) //Расходы
         {
-            var Transactions = await _context.Transactions.Where(t => t.WalletId == choiceWallet).OrderByDescending(t => t.Date).ToListAsync();
+            var transactions = await _context.Transactions.Where(t => t.WalletId == choiceWallet).OrderByDescending(t => t.Date).ToListAsync();
 
-            var Expense = Transactions.Where(t => t.Type == Transaction.TransactionType.Expense).ToList();
+            var expense = transactions.Where(t => t.Type == Transaction.TransactionType.Expense).ToList();
 
-            for (int i = 0; i < Expense.Count; i++)
+            for (int i = 0; i < expense.Count; i++)
             {
-                var transaction = Expense[i];
+                var transaction = expense[i];
                 Console.WriteLine($"{transaction.Date:dd.MM.yyyy} | {transaction.Amount} | {transaction.Description}");
             }
 
             decimal AmountExpense = 0;
-            for (int i = 0; i < Expense.Count; i++)
+            for (int i = 0; i < expense.Count; i++)
             {
-                AmountExpense += Expense[i].Amount;
+                AmountExpense += expense[i].Amount;
             }
 
             Console.WriteLine($"Общая сумма расходов: {AmountExpense}");
@@ -79,25 +74,25 @@ namespace ConsoleApplicationFinancialWallet
             int thisYear = now.Year;
             int thisMonth = now.Month;
 
-            var Transactions = await _context.Transactions.Where(t => t.WalletId == choiceWallet && t.Date.Year == thisYear && t.Date.Month == thisMonth).ToListAsync();
+            var transactions = await _context.Transactions.Where(t => t.WalletId == choiceWallet && t.Date.Year == thisYear && t.Date.Month == thisMonth).ToListAsync();
 
-            var Income = Transactions.Where(t => t.Type == Transaction.TransactionType.Income).ToList();
+            var income = transactions.Where(t => t.Type == Transaction.TransactionType.Income).ToList();
 
             Console.WriteLine($"Доходы за {thisMonth:00}.{thisYear}:");
 
-            if (Income.Count == 0)
+            if (income.Count == 0)
             {
                 Console.WriteLine("Доходов за текущий месяц нет");
                 return;
             }
 
-            for (int i = 0; i < Income.Count; i++)
+            for (int i = 0; i < income.Count; i++)
             {
-                var transaction = Income[i];
+                var transaction = income[i];
                 Console.WriteLine($"{transaction.Date:dd.MM.yyyy} | {transaction.Amount} | {transaction.Description}");
             }
 
-            decimal AmountIncome = Income.Sum(t => t.Amount);
+            decimal AmountIncome = income.Sum(t => t.Amount);
             Console.WriteLine($"Общая сумма доходов за месяц: {AmountIncome}");
 
         }
@@ -108,23 +103,23 @@ namespace ConsoleApplicationFinancialWallet
             int thisYear = now.Year;
             int thisMonth = now.Month;
 
-            var Transactions = await _context.Transactions.Where(t => t.WalletId == choiceWallet && t.Date.Year == thisYear && t.Date.Month == thisMonth).ToListAsync();
+            var transactions = await _context.Transactions.Where(t => t.WalletId == choiceWallet && t.Date.Year == thisYear && t.Date.Month == thisMonth).ToListAsync();
 
-            var Expense = Transactions.Where(t => t.Type == Transaction.TransactionType.Expense).ToList();
+            var expense = transactions.Where(t => t.Type == Transaction.TransactionType.Expense).ToList();
 
-            if (Expense.Count == 0)
+            if (expense.Count == 0)
             {
                 Console.WriteLine("Расходов за текущий месяц нет");
                 return;
             }
             Console.WriteLine($"Расходы за {thisMonth:00}.{thisYear}:");
-            for (int i = 0; i < Expense.Count; i++)
+            for (int i = 0; i < expense.Count; i++)
             {
-                var transaction = Expense[i];
+                var transaction = expense[i];
                 Console.WriteLine($"{transaction.Date:dd.MM.yyyy} | {transaction.Amount} | {transaction.Description}");
             }
 
-            decimal AmountExpense = Expense.Sum(t => t.Amount);
+            decimal AmountExpense = expense.Sum(t => t.Amount);
 
             Console.WriteLine($"Общая сумма расходов за месяц: {AmountExpense}");
 
@@ -136,11 +131,11 @@ namespace ConsoleApplicationFinancialWallet
                 int thisYear = now.Year;
                 int thisMonth = now.Month;
 
-                var Transactions = await _context.Transactions.Where(t => t.WalletId == choiceWallet && t.Date.Year == thisYear && t.Date.Month == thisMonth).ToListAsync();
+                var transactions = await _context.Transactions.Where(t => t.WalletId == choiceWallet && t.Date.Year == thisYear && t.Date.Month == thisMonth).ToListAsync();
 
-                var Expense = Transactions.Where(t => t.Type == Transaction.TransactionType.Expense).ToList();
+                var expense = transactions.Where(t => t.Type == Transaction.TransactionType.Expense).ToList();
 
-                if (Expense.Count == 0)
+                if (expense.Count == 0)
                 {
                     Console.WriteLine("Расходов за текущий месяц нет");
                     return;
@@ -148,9 +143,9 @@ namespace ConsoleApplicationFinancialWallet
 
                 Transaction[] topExpense = new Transaction[3];
 
-                for (int i = 0; i < Expense.Count; i++)
+                for (int i = 0; i < expense.Count; i++)
                 {
-                    var current = Expense[i];
+                    var current = expense[i];
 
                     for (int position = 0; position < 3; position++)
                     {

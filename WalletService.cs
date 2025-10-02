@@ -1,10 +1,5 @@
 ﻿using ConsoleApplicationFinancialWallet.Model;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConsoleApplicationFinancialWallet
 {
@@ -21,14 +16,14 @@ namespace ConsoleApplicationFinancialWallet
         {
             decimal startBalance = await _context.Wallets.Where(w => w.Id == walletId).Select(w => w.StartBalance).FirstOrDefaultAsync();
 
-            decimal Income = await _context.Transactions.Where(t => t.WalletId == walletId && t.Type == Transaction.TransactionType.Income).SumAsync(t => t.Amount);
+            decimal income = await _context.Transactions.Where(t => t.WalletId == walletId && t.Type == Transaction.TransactionType.Income).SumAsync(t => t.Amount);
 
-            decimal Expense = await _context.Transactions.Where(t => t.WalletId == walletId && t.Type == Transaction.TransactionType.Expense).SumAsync(t => t.Amount);
+            decimal expense = await _context.Transactions.Where(t => t.WalletId == walletId && t.Type == Transaction.TransactionType.Expense).SumAsync(t => t.Amount);
 
-            decimal currentBalance = startBalance + Income - Expense;
+            decimal currentBalance = startBalance + income - expense;
 
             Console.WriteLine($"Текущий баланс кошелька: {currentBalance}");
-            Console.WriteLine($"(Начальный: {startBalance} + Доходы: {Income} - Расходы: {Expense})");
+            Console.WriteLine($"(Начальный: {startBalance} + Доходы: {income} - Расходы: {expense})");
 
             return currentBalance;
         }
